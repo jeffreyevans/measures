@@ -20,7 +20,7 @@ suppressMessages(
 
 #*************************************************
 # Set environment and model parameters 
-metrics <- c("lai", "fcov")[2]
+metrics <- c("lai", "fcov")[1]
 
 # dry 12 and 1:5 and wet 6:11
 season = c("none", "dry", "wet")[2] 
