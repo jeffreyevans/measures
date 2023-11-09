@@ -90,21 +90,21 @@ detrend <- function(x, fdate = c(2014, 1), freq = 36, min.obs = 10,
 #*********************************************************
 # using moving averages method
 if(model == "moving.averages") {
-  if(!file.exists(paste0(toupper(metrics), "_300m_trend", ".tif"))) {
+  if(!file.exists(paste0(toupper(metrics), "_300m_ma_trend", ".tif"))) {
     cat("\n", "Decomposing periodicity and deriving trend for", toupper(metrics), "\n")
 	  cat("Using Moving Averages method", "\n")
     metric <- rast(paste0(toupper(metrics), "_300m_filled", ".tif"))
       r.trend <- terra::app(metric, detrend)
-        terra::writeRaster(r.trend, paste0(toupper(metrics), "_300m_trend", ".tif"),
+        terra::writeRaster(r.trend, paste0(toupper(metrics), "_300m_ma_trend", ".tif"),
                            overwrite=TRUE)
   } else {
-    cat("\n", "Periodicity and trend for", toupper(metrics), "already exists", "\n")
+    cat("\n", "Periodicity and Moving Averages trend for", toupper(metrics), "already exists", "\n")
   }
 
 #*********************************************************
 # using Bayesian (BEAST) method
 } else if(model == "Bayesian") {
-  if(!file.exists(paste0(toupper(metrics), "_300m_trend", ".tif"))) {
+  if(!file.exists(paste0(toupper(metrics), "_300m_beast_trend", ".tif"))) {
     cat("\n", "Decomposing periodicity and deriving trend for", toupper(metrics), "\n")
 	  cat("Using Bayesian (BEAST) method", "\n")
     metric <- rast(paste0(toupper(metrics), "_300m_filled", ".tif"))
@@ -119,10 +119,10 @@ if(model == "moving.averages") {
        parms$start=dates[1] 
       o <- beast123(as.matrix(tsm), parms) 
         metric[as.numeric(rownames(tsm))] <- as.data.frame(o$trend$Y)
-      terra::writeRaster(metric, paste0(toupper(metrics), "_300m_trend", ".tif"),
+      terra::writeRaster(metric, paste0(toupper(metrics), "_300m_beast_trend", ".tif"),
                          overwrite=TRUE)
   } else {
-    cat("\n", "Periodicity and trend for", toupper(metrics), "already exists", "\n")
+    cat("\n", "Periodicity and BEAST trend for", toupper(metrics), "already exists", "\n")
   }
 }
 
