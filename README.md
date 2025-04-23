@@ -1,93 +1,73 @@
 # measures
-Code in support of the MACP indigenous measures work
+Code in support of the retrospective PFP analysiis
+
+Contact:
+Jeffrey Evans, PhD., 
+The Nature Conservancy
+Global Protect Science
+jeffrey_evans@tnc.org
 
 **Measuring Our Impacts – Workflow**
 
-This repository is in support of The Nature Conservancy’s Measuring Our Impact effort from the Chief Strategy Office. There are limited ways established to track metrics of ecological condition through time and those that are used are limited geographically or to specific time frames. This work is an effort to establish a workflow for creating a hierarchical modeling framework for understanding ecosystem characteristics. At coarse scales (e.g., ~500 m) some albeit limited inference can be drawn, but finer spatial-scale data and ancillary data related to local threats and actual desired conditions can be used to draw more robust inference.
+This repository is in support of The Nature Conservancy’s retrospecive evaluation of 6 PFP engagment. There are limited ways to track metrics of ecological condition through time and those that are used are limited geographically or to specific time frames. This work is an effort to establish a workflow for creating a hierarchical modeling framework for understanding ecosystem characteristics. At coarse scales (e.g., ~500 m) some albeit limited inference can be drawn, but finer spatial-scale data and ancillary data related to local threats and actual desired conditions can be used to draw more robust inference.
 
-**Workflow for Ecological Condition**
+**Workflow for evaluation of PFP outcomes using Ecological Condition metrics**
 
-1.  **Data acquisition **
+1.  **Data acquisition and processing**
 
-    1.  Download MODIS/Copernicus current 500m multispectral
+    1.  Download and process Lear Area Index (LAI) and Fractional Cover (fCOV) data from the Univerity of Hong Kong [GLASS repostory](https://glass.hku.hk/). The "download_GLASS.R" script facilitates download, in the nested HDF archive format, and processing of this data. 
+	
+    2.  Download [WorldClime data](http://charcoal.cnre.vt.edu/climate/) ()
 
-        1.  Only a 2 bands are available at 250 m; good summary of availability is found [here](https://ladsweb.modaps.eosdis.nasa.gov/missions-and-measurements/modis/)
+    3.  Download IUCN Protected Area polygon vector data, merge with provided PFP polygon data (see build_knn_covariates.R). 
 
-    2.  Download MODIS/Copernicus timeseries indices (LAI, FPAR, & Maybe VCI)
+    4.  Download Open Street Map polygon, line and point data for settletments, roads, rivers, and lakes and calculate Eculidian distance rasters (see build_knn_covariates.R) 
+   
+    5. 	Download and process the [World Terrestrial Ecosystems](https://www.usgs.gov/centers/geosciences-and-environmental-change-science-center/science/global-ecosystems-global-data) raster, subset and reproject to each study area
 
-    3.  Download MODIS Landcover
+    6.  Perform pre-processing on temporal data including; NoData (NA) imputation, outlier removal using LOESS smooting, and detrending periodicity/seasionality using BEAST model (detrend_timeseries_BEAST.R)   
 
-    4.  Download climate metrics (30yr norms), [Rehfeldt data](http://charcoal.cnre.vt.edu/climate/) for North America; else WorldClim. 
+	7.  Create a forest mask, using LAI timeseries, by identifying pixels exceeding defined forest threshold(s) that have a 10% (n=103) contigious run during any point in the timeseries 
 
-    5.  Download 90m SRTM Digital Elevation Model (DEM)
+2.  **Select kNN controls**
 
-        1.  Note – elevatr package might do this; Jeff Hollister from USEPA has added functionality to download SRTM specifically - devtools::install\_github("jhollist/elevatr", "opentopo-gl3")
+    1.  Assign an "in or out" attribute to all forest mask pixels based on intervention units. Split pixels/point centroids that are within interventions to a interventions dataset and outside of interventions to control dataset
 
-* Note - For US, data reprojected to USGS Albers Equal Area ( conus.aea = "+proj=aea +lat\_1=29.5 +lat\_2=45.5 +lat\_0=37.5 +lon\_0=-96 +x\_0=0 +y\_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no\_defs"); For now, in other areas we’ll use the a global Albers Equal Area projection (global.aea = "+proj=aea +lat\_1=29.5 +lat\_2=42.5")
+    2.	Assign ecoosystems (World Terrestrial Ecosystems), climate PCA and ecological indicators raster values to both control and interventions datasets  	 
 
-2.  **Data processing **
+    3.  For control selection, start by stratifying based on the ecosystem type 
 
-    1.  QC Band Masking
+	4.  Using a Mahalanobis kNN, calculate multivarite distances between all interventions/controls observsations and select n=100 smallest distances in the control data, for each intervntion observsations
 
-    2.  NoData (NA) imputation and timeseries smoothing of spectral temporal indices
+	5.  For intervention observsation, calculate the pre-intervention temporal distance (using Dynamic Time Warpping) for each n=100 candiate controls. Select one control observsation with the smallest temporal distance.  	
 
-3.  **Creation of *x* parameter(s)**
+3.  **Creation of *y* parameters and model design matrix**
 
-    1.  Calculate topographic metrics (e.g., CTI, slope/aspect interaction) using RSAGA
+    1.  For "current" paramter, calcualte the expected median LAI and fCOV for the growing seasions (or non-raniy season) representing the last year of data in the timeseries. 
 
-    2.  If necessary, derive climate norms and other metrics (NA for North America)
+    2.  For "change" paramter, calcualte the expected median LAI and fCOV for the growing seasions (or non-raniy season) representing the first year and last year of data in the timeseries. The change is the delta of current and baseline.  
 
-    3.  Run PCA’s on topographic and climate variables, respectively, to create rasters representing collapsed variation of climate and abiotic variables.
+    3.  For "volume" paramter, calcualte the area under the curve for the entire timeseries. 
 
-4.  **Stratification (training sample)**
+    4.  Feature engineering of the timeseries for the model design matrix (covariates)	
 
-    1.  Create classification(s) rasters of stratifying variables (e.g., using quartiles) representing a temperature/moisture and biophysical condition gradient.
+4.  **Trend Analysis**
 
-    2.  Create a single stratification raster representing combinatorics of classified stratifying variables.
+    1.  Subset timeseries data to pre and post interventions and growing seasons within each year for LAI and fCOV. 
 
-    3.  Draw a spatial stratified random sample representing *p* of the population (ie., number of pixels).
+    2.  Calculate the Kendall Tau, for each pixel timeseires, for the pre/post intervention timeseries 
 
-5.  **Creation of *y* parameter and model matrix**
+5.  **Causal Model**
 
-    1.  Calculate weighted Kappa on landcover timeseries (w/in n x n window) 
+    1.  Stratify models by intervention unit and ecosystem type so, each model represents the ecosystem type within a given intervention unit. The esablished minimum sample size for a model is n=100 
 
-    2.  Calculate Kendall’s Tau on timeseries of spectral index (standardize slope ranges to observed data through whole raster, \[-1- 1\]) 
+    2.  Using Causal Forest (ref) we estimate treatment effect size for each intervention observsation, standardized to an effect size. Estimates are written to corresponding pixel to create an effect size  raster output. 
 
-    3.  Calculate max of spectral index for current growing season or use a long-term statistic such as Vegetation Condition Index (VCI). (TBD)
 
-    4.  Standardize the above dependent response variables to common range and expected response 
-
-    5.  Create function (e.g., linear) to combine above dependent variables into a single response (*y*). We can also try a multiple imputation, using separate dependent variables.
-
-    6.  Assign values from the y and x variables to the spatial stratified random sample to create the model matrix used in the imputation model.
-
-6.  **Imputation Model**
-
-    1.  Specify imputation model using random forest proximities for the multivariate distances
-
-        1.  Apply back-prediction evaluation and validation (eg., RMSE) of model
-
-        2.  Compare to other distance measures (eg., Most Similar Neighbor, Gradient Nearest Neighbor, Mahalanobis).
-
-    2.  Predict/impute model to landscape-level independent variables (rasters) creating a matrix of *k*=1 and of *k*=(n-1) specifically pulling distances of each *k*.
-
-    3.  Run additional models focused on specific ranges of our *y* variable indicating ecological condition, this follows the idea of using “reference conditions”.
-
-7.  **Results summary and visualization**
+6.  **Results summary and visualization**
 
     1.  Create maps of distances based on reference condition maps
 
         1.  Calculate proportion of pixels, within threshold distance, of given reference condition(s) across landscape.
 
         2.  Calculate proportion of pixels, within threshold distance, of given reference condition(s) within TNC interventions and control locations
-        
-**Workflow for Intervention Analysis**
-
-1.  **Sampling**
-
-    1.  Utilizing Dynamic Time Warping (DTW) to draw random sample of temporal evaluation metric
-
-    2.  Evaluate land tenure status of stratified random samples
-
-    3.  Specify a Causal Impact Analysis (Brodersen et al., 2015) model for evaluating interventions 
-
