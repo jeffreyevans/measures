@@ -55,7 +55,7 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
     1.  Subset timeseries data to pre and post interventions and growing seasons within each year for LAI and fCOV. 
 
-    2.  Calculate the Kendall Tau, for each pixel timeseires, for the pre/post intervention timeseries 
+    2.  Calculate the Kendall Tau, for each pixel timeseries, for the pre/post intervention timeseries 
 
 5.  **Causal Model**
 
