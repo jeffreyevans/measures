@@ -7,9 +7,9 @@ The Nature Conservancy
 Global Protect Science
 jeffrey_evans@tnc.org
 
-**Measuring Our Impacts – Workflow**
+**Measuring Our Impacts – Modeling Pipeline**
 
-This repository is in support of The Nature Conservancy’s retrospecive evaluation of 6 PFP engagment. There are limited ways to track metrics of ecological condition through time and those that are used are limited geographically or to specific time frames. This work is an effort to establish a workflow for creating a hierarchical modeling framework for understanding ecosystem characteristics. At coarse scales (e.g., ~500 m) some albeit limited inference can be drawn, but finer spatial-scale data and ancillary data related to local threats and actual desired conditions can be used to draw more robust inference.
+This repository is in support of The Nature Conservancy’s retrospecive evaluation of 6 PFP engagment. There are limited ways to track metrics of ecological condition through time and those that are used are limited geographically or to specific time frames. This work is an effort to establish a workflow for creating a hierarchical modeling framework for understanding ecosystem characteristics. At coarse scales (e.g., ~250 m) some albeit limited inference can be drawn, but finer spatial-scale data and ancillary data related to local threats and actual desired conditions can be used to draw more robust inference.
 
 **Workflow for evaluation of PFP outcomes using Ecological Condition metrics**
 
