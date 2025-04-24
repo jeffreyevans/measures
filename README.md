@@ -2,10 +2,10 @@
 Code in support of the retrospective PFP analysiis
 
 Contact:
-Jeffrey Evans, PhD., 
-The Nature Conservancy
-Global Protect Science
-jeffrey_evans@tnc.org
+Jeffrey Evans, PhD.,    <br /> 
+The Nature Conservancy  <br />
+Global Protect Science  <br />
+jeffrey_evans@tnc.org   <br />
 
 **Measuring Our Impacts – Modeling Pipeline**
 
