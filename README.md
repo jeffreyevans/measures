@@ -31,7 +31,7 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
 2.  **Select kNN controls**
 
-Note; these processing steps are implementing in the [BuildTreatments.R](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script. It is currently written with multi-threading and database output. 
+Note; these processing steps are implementing in the [BuildTreatments](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script. It is currently written with multi-threading and database output. 
 
     1.  Assign an "in or out" attribute to all forest mask pixels based on intervention units. Split pixels/point centroids that are within interventions to a interventions dataset and outside of interventions to control dataset
 
@@ -45,7 +45,7 @@ Note; these processing steps are implementing in the [BuildTreatments.R](https:/
 
 3.  **Creation of *y* parameters and model design matrix**
 
-Note; these processing steps are implementing in the [BuildTreatments.R](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script.
+Note; these processing steps are implementing in the [BuildTreatments](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script.
 
     1.  For "current" paramter, calcualte the expected median LAI and fCOV for the growing seasions (or non-raniy season) representing the last year of data in the timeseries. 
 
