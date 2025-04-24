@@ -29,9 +29,7 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
 	7.  Create a forest mask, using LAI timeseries, by identifying pixels exceeding defined forest threshold(s) that have a 10% (n=103) contigious run during any point in the timeseries (see create_forest_mask.R) 
 
-2.  **Select kNN controls**
-
-Note; these processing steps are implementing in the [BuildTreatments](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script. It is currently written with multi-threading and database output. 
+2.  **Select kNN controls** - These processing steps are implementing in the [BuildTreatments](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script. It is currently written with multi-threading and database output. 
 
     1.  Assign an "in or out" attribute to all forest mask pixels based on intervention units. Split pixels/point centroids that are within interventions to a interventions dataset and outside of interventions to control dataset
 
@@ -43,9 +41,7 @@ Note; these processing steps are implementing in the [BuildTreatments](https://g
 
 	5.  For intervention observsation, calculate the pre-intervention temporal distance (using Dynamic Time Warpping) for each n=100 candiate controls. Select one control observsation with the smallest temporal distance.  	
 
-3.  **Creation of *y* parameters and model design matrix**
-
-Note; these processing steps are implementing in the [BuildTreatments](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script.
+3.  **Creation of *y* parameters and model design matrix** - These processing steps are implementing in the [BuildTreatments](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script.
 
     1.  For "current" paramter, calcualte the expected median LAI and fCOV for the growing seasions (or non-raniy season) representing the last year of data in the timeseries. 
 
@@ -55,26 +51,20 @@ Note; these processing steps are implementing in the [BuildTreatments](https://g
 
     4.  Feature engineering of the timeseries for the model design matrix (covariates)	
 
-4.  **Trend Analysis**
-
-Note; these processing steps are implementing in the [tau_trend_analysis](https://github.com/jeffreyevans/measures/blob/master/R/tau_trend_analysis.R) script are is written to be multi-threaded
+4.  **Trend Analysis** - These processing steps are implementing in the [tau_trend_analysis](https://github.com/jeffreyevans/measures/blob/master/R/tau_trend_analysis.R) script are is written to be multi-threaded
 
     1.  Subset timeseries data to pre and post interventions and growing seasons within each year for LAI and fCOV. 
 
     2.  Calculate the Kendall Tau, for each pixel timeseries, for the pre/post intervention timeseries 
 
-5.  **Causal Model**
-
-Note; the causal model is implemented in [CausalForestModel](https://github.com/jeffreyevans/measures/blob/master/R/CausalForestModel.R) script
+5.  **Causal Model** - The causal model is implemented in [CausalForestModel](https://github.com/jeffreyevans/measures/blob/master/R/CausalForestModel.R) script
 
     1.  Stratify models by intervention unit and ecosystem type so, each model represents the ecosystem type within a given intervention unit. The esablished minimum sample size for a model is n=100 
 
     2.  Using Causal Forest (ref) we estimate treatment effect size for each intervention observsation, standardized to an effect size. Estimates are written to corresponding pixel to create an effect size  raster output. 
 
 
-6.  **Results summary and visualization**
-
-Note; these processing steps are implementing in the [Compile_Classify_Results](https://github.com/jeffreyevans/measures/blob/master/R/Compile_Classify_Results.R) script
+6.  **Results summary and visualization** - These processing steps are implementing in the [Compile_Classify_Results](https://github.com/jeffreyevans/measures/blob/master/R/Compile_Classify_Results.R) script
 
     1.  Tabulate results for effect sizes
 	
@@ -86,7 +76,7 @@ Note; these processing steps are implementing in the [Compile_Classify_Results](
 			
 			2. IUCN protection for 1a and 1b
 
-	2.	Tabulate results for Tau trends
+    2.	Tabulate results for Tau trends
 
 		1. Classify pre and post intervention Tau trends results into 0.1 bins 
 		
@@ -104,9 +94,9 @@ Note; these processing steps are implementing in the [Compile_Classify_Results](
 			
 			2. IUCN protection for 1a and 1b			
 
-	3. Create rasters (in single tif) representing response variables for treatment and control pixels.
+    3. Create rasters (in single tif) representing response variables for treatment and control pixels.
 
-	4. Evaluate representation of ecosystems (WTE's) of interventions compared to entire country, output table (see process_elu.R & representation.R). 
+    4. Evaluate representation of ecosystems (WTE's) of interventions compared to entire country, output table (see process_elu.R & representation.R). 
 
-	5. Evaluate trend and effect size relationships with climate. The CHELSA_climate_analysis.R and climate_correlations.R scripts support a thorough analysis of climate change metrics, including download, processing and derivation of climate metrics. The relationships are characterized using a nonlinear regression. The ttopographic_analysis.R script implements a more general univariate assesment with an option for elevation, slope*cos(aspect) (slope aspect interaction transformation), trasp (aspect transformation) or the aridity index.  
+    5. Evaluate trend and effect size relationships with climate. The CHELSA_climate_analysis.R and climate_correlations.R scripts support a thorough analysis of climate change metrics, including download, processing and derivation of climate metrics. The relationships are characterized using a nonlinear regression. The ttopographic_analysis.R script implements a more general univariate assesment with an option for elevation, slope*cos(aspect) (slope aspect interaction transformation), trasp (aspect transformation) or the aridity index.  
   	
