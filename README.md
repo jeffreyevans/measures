@@ -98,5 +98,5 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
     4. Evaluate representation of ecosystems (WTE's) of interventions compared to entire country, output table (see process_elu.R & representation.R). 
 
-    5. Evaluate trend and effect size relationships with climate. The CHELSA_climate_analysis.R and climate_correlations.R scripts support a thorough analysis of climate change metrics, including download, processing and derivation of climate metrics. The relationships are characterized using a nonlinear regression. The tsopographic_analysis.R script implements a more general univariate assesment with an option for elevation, slope*cos(aspect) (slope aspect interaction transformation), trasp (linear centered-aspect transformation) or the aridity index.  
+    5. Evaluate trend and effect size relationships with climate. The CHELSA_climate_analysis.R and climate_correlations.R scripts support a thorough analysis of climate change metrics, including download, processing and derivation of climate metrics. The relationships are characterized using a nonlinear regression. The topographic_analysis.R script implements a more general univariate assesment with an option for elevation, slope*cos(aspect) (slope aspect interaction transformation), trasp (linear centered-aspect transformation) or the aridity index.  
   	
