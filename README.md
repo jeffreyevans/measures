@@ -19,7 +19,7 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 	
     2.  Download [WorldClime data](http://charcoal.cnre.vt.edu/climate/) ()
 
-    3.  Download IUCN Protected Area polygon vector data, merge with provided PFP polygon data (see build_knn_covariates.R). 
+    3.  Download IUCN Protected Area polygon vector data, merge with provided PFP polygon data (see build_knn_covariates.R). Note; there is an option to update these boundaries in the BuildTreatments.R script. 
 
     4.  Download Open Street Map polygon, line and point data for settletments, roads, rivers, and lakes and calculate Eculidian distance rasters (see build_knn_covariates.R) 
    
@@ -27,9 +27,11 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
     6.  Perform pre-processing on temporal data including; NoData (NA) imputation, outlier removal using LOESS smooting, and detrending periodicity/seasionality using BEAST model (detrend_timeseries_BEAST.R)   
 
-	7.  Create a forest mask, using LAI timeseries, by identifying pixels exceeding defined forest threshold(s) that have a 10% (n=103) contigious run during any point in the timeseries 
+	7.  Create a forest mask, using LAI timeseries, by identifying pixels exceeding defined forest threshold(s) that have a 10% (n=103) contigious run during any point in the timeseries (see create_forest_mask.R) 
 
 2.  **Select kNN controls**
+
+Note; these processing steps are implementing in the BuildTreatments.R script. It is currently written with multi-threading and database output. 
 
     1.  Assign an "in or out" attribute to all forest mask pixels based on intervention units. Split pixels/point centroids that are within interventions to a interventions dataset and outside of interventions to control dataset
 
@@ -43,6 +45,8 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
 3.  **Creation of *y* parameters and model design matrix**
 
+Note; these processing steps are implementing in the BuildTreatments.R script.
+
     1.  For "current" paramter, calcualte the expected median LAI and fCOV for the growing seasions (or non-raniy season) representing the last year of data in the timeseries. 
 
     2.  For "change" paramter, calcualte the expected median LAI and fCOV for the growing seasions (or non-raniy season) representing the first year and last year of data in the timeseries. The change is the delta of current and baseline.  
@@ -53,11 +57,15 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
 4.  **Trend Analysis**
 
+Note; these processing steps are implementing in the tau_trend_analysis.R script are is written to be multi-threaded
+
     1.  Subset timeseries data to pre and post interventions and growing seasons within each year for LAI and fCOV. 
 
     2.  Calculate the Kendall Tau, for each pixel timeseries, for the pre/post intervention timeseries 
 
 5.  **Causal Model**
+
+Note; the causal model is implemented in the CausalForestModel.R script
 
     1.  Stratify models by intervention unit and ecosystem type so, each model represents the ecosystem type within a given intervention unit. The esablished minimum sample size for a model is n=100 
 
@@ -66,8 +74,39 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
 6.  **Results summary and visualization**
 
-    1.  Create maps of distances based on reference condition maps
+Note; these processing steps are implementing in the Compile_Classify_Results.R script
 
-        1.  Calculate proportion of pixels, within threshold distance, of given reference condition(s) across landscape.
+    1.  Tabulate results for effect sizes
+	
+		1. Classify effect size results into 0.1 bins 
+		
+		2. Output tables of classified effect size aggregating by;
+		
+			1. Interventions
+			
+			2. IUCN protection for 1a and 1b
 
-        2.  Calculate proportion of pixels, within threshold distance, of given reference condition(s) within TNC interventions and control locations
+	2.	Tabulate results for Tau trends
+
+		1. Classify pre and post intervention Tau trends results into 0.1 bins 
+		
+		2.  Classify direction of change in pre and post intervention trends
+
+		3. Output tables of classified trends aggregating by;
+		
+			1. Interventions
+			
+			2. IUCN protection for 1a and 1b
+			
+		4. Output tables of trend direction aggregating by;
+		
+			1. Interventions
+			
+			2. IUCN protection for 1a and 1b			
+
+	3. Create rasters (in single tif) representing response variables for treatment and control pixels.
+
+	4. Evaluate representation of ecosystems (WTE's) of interventions compared to entire country, output table (see process_elu.R & representation.R). 
+
+	5. Evaluate trend and effect size relationships with climate. The CHELSA_climate_analysis.R and climate_correlations.R scripts support a thorough analysis of climate change metrics, including download, processing and derivation of climate metrics. The relationships are characterized using a nonlinear regression. The ttopographic_analysis.R script implements a more general univariate assesment with an option for elevation, slope*cos(aspect) (slope aspect interaction transformation), trasp (aspect transformation) or the aridity index.  
+  	
