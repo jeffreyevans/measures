@@ -31,7 +31,7 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
 2.  **Select kNN controls**
 
-Note; these processing steps are implementing in the BuildTreatments.R script. It is currently written with multi-threading and database output. 
+Note; these processing steps are implementing in the [BuildTreatments.R](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script. It is currently written with multi-threading and database output. 
 
     1.  Assign an "in or out" attribute to all forest mask pixels based on intervention units. Split pixels/point centroids that are within interventions to a interventions dataset and outside of interventions to control dataset
 
@@ -45,7 +45,7 @@ Note; these processing steps are implementing in the BuildTreatments.R script. I
 
 3.  **Creation of *y* parameters and model design matrix**
 
-Note; these processing steps are implementing in the BuildTreatments.R script.
+Note; these processing steps are implementing in the [BuildTreatments.R](https://github.com/jeffreyevans/measures/blob/master/R/BuildTreatments.R) script.
 
     1.  For "current" paramter, calcualte the expected median LAI and fCOV for the growing seasions (or non-raniy season) representing the last year of data in the timeseries. 
 
@@ -57,7 +57,7 @@ Note; these processing steps are implementing in the BuildTreatments.R script.
 
 4.  **Trend Analysis**
 
-Note; these processing steps are implementing in the tau_trend_analysis.R script are is written to be multi-threaded
+Note; these processing steps are implementing in the [tau_trend_analysis](https://github.com/jeffreyevans/measures/blob/master/R/tau_trend_analysis.R) script are is written to be multi-threaded
 
     1.  Subset timeseries data to pre and post interventions and growing seasons within each year for LAI and fCOV. 
 
@@ -65,7 +65,7 @@ Note; these processing steps are implementing in the tau_trend_analysis.R script
 
 5.  **Causal Model**
 
-Note; the causal model is implemented in the CausalForestModel.R script
+Note; the causal model is implemented in [CausalForestModel](https://github.com/jeffreyevans/measures/blob/master/R/CausalForestModel.R) script
 
     1.  Stratify models by intervention unit and ecosystem type so, each model represents the ecosystem type within a given intervention unit. The esablished minimum sample size for a model is n=100 
 
@@ -74,7 +74,7 @@ Note; the causal model is implemented in the CausalForestModel.R script
 
 6.  **Results summary and visualization**
 
-Note; these processing steps are implementing in the Compile_Classify_Results.R script
+Note; these processing steps are implementing in the [Compile_Classify_Results](https://github.com/jeffreyevans/measures/blob/master/R/Compile_Classify_Results.R) script
 
     1.  Tabulate results for effect sizes
 	
