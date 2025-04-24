@@ -17,7 +17,7 @@ This repository is in support of The Nature Conservancy’s retrospecive evaluat
 
     1.  Download and process Lear Area Index (LAI) and Fractional Cover (fCOV) data from the Univerity of Hong Kong [GLASS repostory](https://glass.hku.hk/). The "download_GLASS.R" script facilitates download, in the nested HDF archive format, and processing of this data. 
 	
-    2.  Download [WorldClime data](http://charcoal.cnre.vt.edu/climate/) ()
+    2.  Download [WorldClime data](http://charcoal.cnre.vt.edu/climate/) for use in a PCA as control selection variables and model covariates. 
 
     3.  Download IUCN Protected Area polygon vector data, merge with provided PFP polygon data (see build_knn_covariates.R). Note; there is an option to update these boundaries in the BuildTreatments.R script. 
 
