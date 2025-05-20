@@ -36,16 +36,20 @@
 #   .../country/tables/query/trend_change_direction_freq.csv -  – comma separated frequency, hectares and percent of direction fo change in pre/post trends
 # 
 # The “queries” are in directories denoting their subset and the above tables exists for each subset. 
-# intervention - are all of the intervention polygons
-# pa – Are just Protected Areas excepting Bhutan, Canada and Costa Rica because the pa and intervention units are the same
-# pfp – are just the PFP’s but, only for Brazil, Colombia and Peru.  
-# Iucn – this is subset to IUCN Ia, Ib and II
+#   intervention - are all of the intervention polygons
+#   pa – Are just Protected Areas excepting Bhutan, Canada and Costa Rica because the pa and intervention units are the same
+#   pfp – are just the PFP’s but, only for Brazil, Colombia and Peru.  
+#   Iucn – this is subset to IUCN Ia, Ib and II
 #
 suppressMessages(lapply(c("sf", "spatialEco", "terra", "ggplot2"), 
 		         require, character.only = TRUE))
+				 
+#tmpFiles(current=TRUE, orphan=TRUE, old=TRUE, remove=TRUE)
+#rm(list=ls(all=TRUE))
+#  gc()
 
 #### which PFP to process
-( cty <- c("brazil", "bhutan", "canada", "colombia", "costa_rica", "peru")[1] )
+( cty <- c("brazil", "bhutan", "canada", "colombia", "costa_rica", "peru")[5] )
 root = file.path("C:/evans/PFP/results", cty)
 setwd(root)
   out.dir = file.path("C:/evans/PFP/results", cty)
@@ -53,15 +57,15 @@ setwd(root)
   mdl.dir = file.path("C:/evans/PFP", cty, "model")
 
 #### processing switches
-mask.by <- c("interventions", "iucn", "pfp", "country", "pa")[1] 
+mask.by <- c("interventions", "iucn", "pfp", "pa", "country")[1] 
 cal.areas = c(TRUE, FALSE)[2]
 cal.es = c(TRUE, FALSE)[1]
 cal.trend = c(TRUE, FALSE)[1]
 
 #### classification paramters
-n.class = c(7, 9, 21)[3]                                          # number of classes
-fcov.ha.scalar = 25                                               # count scalar for 250m lai (average cell size in ha)
-lai.ha.scalar = 6.25	                                          # count scalar for 5000m fcov (average cell size in ha)
+n.class = c(7, 9, 21)[3]                      # number of classes
+fcov.ha.scalar = 25                           # count scalar for 250m lai (average cell size in ha)
+lai.ha.scalar = 6.25	                      # count scalar for 5000m fcov (average cell size in ha)
 iucn.level <- c("I", "I and II")[1]
   if(cty == "peru") iucn.level = "I and II"  
 
@@ -141,7 +145,7 @@ if(any(cty %in% c("colombia", "peru", "brazil"))){
     st_geometry(pfp) <- "geometry"
   	pfp$IUCN <- "Not Applicable"
 	pfp$type <- "PFP"
-    interventions <- st_read(file.path(dat.dir, paste0(cty, ".gpkg")), "intervention_boundaries") 
+    interventions <- st_read(file.path(dat.dir, paste0(cty, ".gpkg")), "interventions") 
 } else {
   pa <- st_read(file.path(dat.dir, paste0(cty, ".gpkg")), "protected_areas")
     st_geometry(pa) <- "geometry"
@@ -280,8 +284,15 @@ f.lai <- freq(lai.class, usenames = TRUE)
 	                hte.labs[which(!hte.labs %in% f.lai$class[idx])],
                     count = 0, ha = 0, pct = 0))			 
   }	
-if(nrow(miss) > 0) f.lai <- rbind(f.lai, miss)
-  
+if(nrow(miss) > 0) {
+  f.lai <- rbind(f.lai, miss)
+  f.lai <- lapply(unique(f.lai$metric), \(f) {
+    u <- f.lai[f.lai$metric == f,] 
+	return(u[match(hte.labs,u$class),])
+  })
+  f.lai <- do.call("rbind", f.lai) 
+}
+
 f.fcov <- freq(fcov.class, usenames = TRUE)
   names(f.fcov)[1:2] <- c("metric", "class")
   miss <- f.fcov[FALSE,]
@@ -296,10 +307,18 @@ f.fcov <- freq(fcov.class, usenames = TRUE)
 	                hte.labs[which(!hte.labs %in% f.fcov$class[idx])],
                     count = 0, ha = 0, pct = 0))			 
   }	
-if(nrow(miss) > 0) f.fcov <- rbind(f.fcov, miss)
+if(nrow(miss) > 0) {
+  f.fcov <- rbind(f.fcov, miss)
+  f.fcov <- lapply(unique(f.fcov$metric), \(f) {
+    u <- f.fcov[f.fcov$metric == f,] 
+	return(u[match(hte.labs,u$class),])
+  })
+  f.fcov <- do.call("rbind", f.fcov) 
+}
 
 es.class.freq <- rbind(f.lai, f.fcov)
-  write.csv(es.class.freq, file.path(table.dir, "effect_size_class_freq.csv"))
+  es.class.freq <- es.class.freq[with(es.class.freq, order(metric)),]
+    write.csv(es.class.freq, file.path(table.dir, "effect_size_class_freq.csv"))
 
 } # end of effect size processing
 
@@ -500,7 +519,7 @@ write.csv(tau.dir, file.path(table.dir, "slope_change_direction_freq.csv"))
 
 if(mask.by != "country"){
   d <- na.omit(data.frame(c(lai.class, lai.chg)))
-    ft <- lapply(c("current", "gain", "loss", "tsa"), \(i) { 
+    ft <- lapply(c("change", "current", "tsa"), \(i) { 
       f <- data.frame(metric = paste0("lai_", i), table(d[,"lai_change_type"], d[,i]))
         names(f) <- c("metric",  "trend", "effect_size", "count")
     	return(f)
@@ -508,7 +527,7 @@ if(mask.by != "country"){
   lai.f <- do.call("rbind", ft)
    
   d <- na.omit(data.frame(c(fcov.class, fcov.chg)))
-    ft <- lapply(c("current", "gain", "loss", "tsa"), \(i) { 
+    ft <- lapply(c("change", "current", "tsa"), \(i) { 
       f <- data.frame(metric = paste0("fcov_", i), table(d[,"fcov_change_type"], d[,i]))
         names(f) <- c("metric",  "trend", "effect_size", "count")
     	return(f)
