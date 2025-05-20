@@ -10,7 +10,7 @@ cty = file.path(root, cty.names, "tables", table.type)
   }
 
 run.es = c(TRUE, FALSE)[1]
-run.trends = c(TRUE, FALSE)[2]
+run.trends = c(TRUE, FALSE)[1]
 
 #********************************************************
 # Summarize effect sizes
@@ -108,16 +108,16 @@ for(d in cty) {
 
 #********************************************************
 # Summarize trends	 
-if(run.trends) { 
+if(run.trends) {
+ 
 trend.names = c("period", "class", "count", "ha", "pct")
-tnames <- c("pre_lt_0", "pre_gt_0", "pre_lt_neg0.7", "pre_gt_0.7",
-            "post_lt_0", "post_gt_0", "post_lt_neg0.7", "post_gt_0.7")
+tnames <- c("pre_lt_neg0.7", "pre_lt_0", "pre_zero", "pre_small", "pre_gt_0",  "pre_gt_0.7",
+            "post_lt_neg0.7", "post_lt_0", "post_zero", "post_small", "post_gt_0",  "post_gt_0.7")
 
-trend.lai <- data.frame(matrix(ncol = 9, nrow = length(cty.names)))
+trend.lai <- data.frame(matrix(ncol = length(tnames)+1, nrow = length(cty.names)))
   names(trend.lai) <- c("country", tnames)
-    trend.lai["country"] <- cty.names 
-	
-trend.fcov <- data.frame(matrix(ncol = 9, nrow = length(cty.names)))
+    trend.lai["country"] <- cty.names 	
+trend.fcov <- data.frame(matrix(ncol = length(tnames)+1, nrow = length(cty.names)))
   names(trend.fcov) <- c("country", tnames)
     trend.fcov["country"] <- cty.names   
 

@@ -49,7 +49,7 @@ suppressMessages(lapply(c("sf", "spatialEco", "terra", "ggplot2"),
 #  gc()
 
 #### which PFP to process
-( cty <- c("brazil", "bhutan", "canada", "colombia", "costa_rica", "peru")[5] )
+( cty <- c("brazil", "bhutan", "canada", "colombia", "costa_rica", "peru")[1] )
 root = file.path("C:/evans/PFP/results", cty)
 setwd(root)
   out.dir = file.path("C:/evans/PFP/results", cty)
@@ -57,7 +57,7 @@ setwd(root)
   mdl.dir = file.path("C:/evans/PFP", cty, "model")
 
 #### processing switches
-mask.by <- c("interventions", "iucn", "pfp", "pa", "country")[1] 
+mask.by <- c("interventions", "iucn", "pfp", "pa", "country")[3] 
 cal.areas = c(TRUE, FALSE)[2]
 cal.es = c(TRUE, FALSE)[1]
 cal.trend = c(TRUE, FALSE)[1]
@@ -413,7 +413,14 @@ f.lai <- freq(lai.tau.class, usenames = TRUE)
                       count = 0, ha = 0, pct = 0))
 	  }			  
     }
-if(nrow(miss) > 0) f.lai <- rbind(f.lai, miss)
+if(nrow(miss) > 0) {
+  f.lai <- rbind(f.lai, miss)
+  f.lai <- lapply(unique(f.lai$period), \(f) {
+    u <- f.lai[f.lai$period == f,] 
+	return(u[match(hte.labs,u$class),])
+  })
+  f.lai <- do.call("rbind", f.lai) 
+}
 	
 f.fcov <- freq(fcov.tau.class, usenames = TRUE)
   names(f.fcov)[1:2] <- c("period", "class")
@@ -431,7 +438,14 @@ f.fcov <- freq(fcov.tau.class, usenames = TRUE)
                       count = 0, ha = 0, pct = 0))
       }					  
     }
-if(nrow(miss) > 0) f.fcov <- rbind(f.fcov, miss)
+if(nrow(miss) > 0) {
+  f.fcov <- rbind(f.fcov, miss)
+  f.fcov <- lapply(unique(f.fcov$period), \(f) {
+    u <- f.fcov[f.fcov$period == f,] 
+	return(u[match(hte.labs,u$class),])
+  })
+  f.fcov <- do.call("rbind", f.fcov) 
+}
 	
 tau.class.freq <- rbind(f.lai, f.fcov)
   write.csv(tau.class.freq, file.path(table.dir, "trend_class_freq.csv"))
